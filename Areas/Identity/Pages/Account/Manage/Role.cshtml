@@ -1,0 +1,31 @@
+﻿@page
+@model RoleModel
+@{
+    ViewData["Title"] = "Manage Role";
+    ViewData["ActivePage"] = ManageNavPages.Role;
+}
+
+<h4>@ViewData["Title"]</h4>
+<h5>You are currently in @Model.CurrentRole role.</h5>
+<partial name="_StatusMessage" model="Model.StatusMessage" />
+<p>Changeing role will cause you to log out</p>
+<div class="row">
+    <div class="col-md-6">
+        <form id="role-form" method="post">
+            <div class="form-group">
+                <label asp-for="Roles"></label>
+                    <select asp-for="Input.newRoles" class="form-control">
+                        <option value="">Select role</option>
+                        <option value="0">User</option>
+                        <option value="1">Owner</option>
+                        <option value="2">Manager</option>
+                    </select>
+            </div>
+            <button id="change-role-button" class="btn btn-primary" asp-page-handler="ChangeUserRole">Change Role</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

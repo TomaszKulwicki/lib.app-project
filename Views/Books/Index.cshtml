@@ -1,0 +1,91 @@
+@using Microsoft.AspNetCore.Identity
+@model IEnumerable<LibApp.Models.Book>
+
+@{ ViewBag.Title = "Books";
+    Layout = "~/Views/Shared/_Layout.cshtml"; }
+
+@inject UserManager<IdentityUser> UserManager
+
+<h2>Books</h2>
+
+<p>
+    <a class="btn btn-primary" asp-action="New">New Book</a>
+</p>
+
+<table id="books" class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Book</th>
+            <th>Genre</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+@section Scripts
+{
+    <script>
+        $(document).ready(function () {
+            $("#books").DataTable({
+                ajax: {
+                    url: "api/allbooks",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "name",
+                        render: function (data, type, book) {
+                            return "<a href='books/details/" + book.id + "'>" + book.name + "</a>";
+                        }
+                    },
+                    {
+                        data: "genre.name"
+                    },
+                    {
+                        data: "id",
+                        render: function (data) {
+                            console.log(data);
+                            return "<button class='btn btn-secondary js-delete' data-book-id=" + data + ">Delete</button>";
+                        }
+                    }
+                ]
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            var table = $("#books").DataTable();
+            $("#books").on("click", ".js-delete", function () {
+
+                var button = $(this);
+                bootbox.confirm({
+                    message: "Confirm customer deletion?",
+                    buttons: {
+                        confirm: {
+                            label: 'Yes',
+                            className: 'btn-success'
+                        },
+                        cancel: {
+                            label: 'No',
+                            className: 'btn-danger'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            $.ajax({
+                                url: "/api/books/delete?BookId=" + button.attr("data-book-id"),
+                                method: "DELETE",
+                                success: function () {
+                                    table.row(button.parents("tr")).remove().draw();
+                                }
+                            });
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}
